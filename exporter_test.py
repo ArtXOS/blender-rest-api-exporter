@@ -5,6 +5,7 @@ import requests
 import datetime
 import json
 import time
+import os
 
 bl_info = {
     "name": "Export test",
@@ -15,6 +16,7 @@ bl_info = {
     "category": "Import-Export"
 }
 
+TIMEOUT = 100
 
 class User(bpy.types.PropertyGroup):
     username: bpy.props.StringProperty(
@@ -36,13 +38,17 @@ class User(bpy.types.PropertyGroup):
 
 class Payload(bpy.types.PropertyGroup):
     file_name: bpy.props.StringProperty()
+    filepath: bpy.props.StringProperty()
     body: bpy.props.StringProperty()
-    pass
 
 
 class Request(bpy.types.PropertyGroup):
     method: bpy.props.StringProperty()
-    endpoint: bpy.props.StringProperty()
+    endpoint: bpy.props.StringProperty(
+        name="Endpoint",
+        description="API endpoint",
+        default=""
+    )
     headers: bpy.props.StringProperty()
     payload: bpy.props.PointerProperty(type=Payload)
 
@@ -73,7 +79,7 @@ class DoGetRequest(bpy.types.Operator):
         headers = json.loads(context.scene.Request.headers)
         scene_response = context.scene.Response
         try:
-            response = requests.get(endpoint, headers=headers, timeout=30)
+            response = requests.get(endpoint, headers=headers, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError:
             print("Errorrrrrr")
             scene_response.successful = False
@@ -87,6 +93,7 @@ class DoGetRequest(bpy.types.Operator):
         scene_response.status = "[" + str(response.status_code) + "]"
         scene_response.headers = str(response.headers)
         scene_response.payload.body = str(response.content)
+
         return {'FINISHED'}
 
 
@@ -98,22 +105,29 @@ class DoPostRequest(bpy.types.Operator):
         print("Executing request: " + bpy.context.scene.Request.method + " request")
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
         headers = json.loads(context.scene.Request.headers)
+        payload = context.scene.Request.payload
+
+        file = open(payload.filepath, 'rb')
+        files = {'model': (payload.file_name, file, 'multipart/form-data')}
+
         scene_response = context.scene.Response
+
         try:
-            response = requests.post(endpoint, headers=headers, data={}, timeout=30)
+            response = requests.post(endpoint, headers=headers, files=files, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError:
             print("Errorrrrrr")
             scene_response.successful = False
-            return {'FINISHED'}
         except requests.exceptions.ReadTimeout:
             print("timeout")
             scene_response.successful = False
-            return {'FINISHED'}
+        finally:
+            file.close()
 
         scene_response.successful = True
         scene_response.status = "[" + str(response.status_code) + "]"
         scene_response.headers = str(response.headers)
         scene_response.payload.body = str(response.content)
+
         return {'FINISHED'}
 
 
@@ -127,7 +141,7 @@ class DoPutRequest(bpy.types.Operator):
         headers = json.loads(context.scene.Request.headers)
         scene_response = context.scene.Response
         try:
-            response = requests.put(endpoint, headers=headers, data={}, timeout=30)
+            response = requests.put(endpoint, headers=headers, files={}, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError:
             print("Errorrrrrr")
             scene_response.successful = False
@@ -141,6 +155,7 @@ class DoPutRequest(bpy.types.Operator):
         scene_response.status = "[" + str(response.status_code) + "]"
         scene_response.headers = str(response.headers)
         scene_response.payload.body = str(response.content)
+
         return {'FINISHED'}
 
 
@@ -154,7 +169,7 @@ class DoDeleteRequest(bpy.types.Operator):
         headers = json.loads(context.scene.Request.headers)
         scene_response = context.scene.Response
         try:
-            response = requests.delete(endpoint, headers=headers, timeout=30)
+            response = requests.delete(endpoint, headers=headers, timeout=TIMEOUT)
         except requests.exceptions.ConnectionError:
             print("Errorrrrrr")
             scene_response.successful = False
@@ -188,8 +203,136 @@ class DoRequest(bpy.types.Operator):
         eval(method_call)
         response = bpy.context.scene.Response
         print("Done")
-        print(response.status, response.headers, response.payload.body)
+        print(response.status, str(json.dumps(response.headers)), str(json.dumps(response.payload.body)))
         return {'FINISHED'}
+
+
+class ExportAs(bpy.types.Operator):
+    bl_idname = "object.export_as"
+    bl_label = "Export As"
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def invoke(self, context, event):
+        return context.window_manager.invoke_props_dialog(self, width=300)
+
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(context.scene, "file_format")
+
+    def execute(self, context):
+        temp_dir = bpy.context.preferences.filepaths.temporary_directory
+        file_format = context.scene.file_format
+        file_name = "test_file"
+        temp_dir = "C:\\Users\\illia\\Desktop\\"
+        filepath = temp_dir + file_name + "." + file_format.lower()
+
+        if file_format == 'OBJ':
+            bpy.ops.export_scene.obj(filepath=filepath)
+            # TODO .mtl file export
+        elif file_format == 'FBX':
+            bpy.ops.export_scene.fbx(filepath=filepath)
+        elif file_format == 'BLEND':
+            bpy.ops.wm.save_mainfile(filepath=filepath)
+        elif file_format == 'GLTF':
+            bpy.ops.export_scene.gltf(filepath=filepath)
+
+        request = context.scene.Request
+        request.method = "POST"
+        request.headers = "{}"
+        request.payload.file_name = file_name
+        request.payload.filepath = filepath
+
+        try:
+            bpy.ops.object.do_request()
+        except RuntimeError:
+            print("Error here")
+        finally:
+            os.remove(filepath)
+
+        return {'FINISHED'}
+
+
+class Export(bpy.types.Operator):
+    bl_idname = "object.export"
+    bl_label = "Export"
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        return {'FINISHED'}
+
+
+class CheckConnection(bpy.types.Operator):
+    bl_idname = "system.check_connection"
+    bl_label = "Check connection"
+
+    def execute(self, context):
+        request = context.scene.Request
+        request.method = "GET"
+        request.headers = "{}"
+
+        try:
+            bpy.ops.object.do_request()
+        except RuntimeError:
+            print("Error here")
+
+        return {'FINISHED'}
+
+
+class ExporterPanel(bpy.types.Panel):
+    bl_idname = "PANEL1_PT_exporter_panel"
+    bl_label = "Export to API"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "object"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.object is not None
+
+    def draw(self, context):
+        APIData = context.scene.APIData
+        Request = context.scene.Request
+
+        main_layout = self.layout
+        main_layout.label(text="Credentials:")
+
+        credentials_box = main_layout.box()
+        credentials_box_split = credentials_box.split()
+
+        credentials_box_left_column = credentials_box_split.column(align=True)
+        credentials_box_right_column = credentials_box_split.column(align=True)
+
+        credentials_box_left_column.label(text="Username:")
+        credentials_box_left_column.prop(APIData.user, "username", icon_only=True)
+
+        credentials_box_right_column.label(text="User email:")
+        credentials_box_right_column.prop(APIData.user, "user_email", icon_only=True)
+
+        credentials_box.row().prop(APIData.user, "authorization")
+
+        host_box = main_layout.box()
+        host_box.row().prop(APIData, "host")
+        host_box.row().prop(Request, "endpoint")
+        host_box.split(factor=0.5).operator("system.check_connection")
+
+        main_layout.label(text="Import section:")
+        import_box = main_layout.box()
+
+        main_layout.label(text="Export section:")
+        export_box = main_layout.box()
+        export_buttons_row = export_box.row()
+        export_buttons_row.operator("object.export")
+        export_buttons_row.operator("object.export_as")
+
+        log_box = main_layout.box()
+        log_box.scale_y = 4
 
 
 classes = (
@@ -198,11 +341,15 @@ classes = (
     Payload,
     Request,
     Response,
+    CheckConnection,
     DoRequest,
     DoGetRequest,
     DoPostRequest,
     DoPutRequest,
-    DoDeleteRequest
+    DoDeleteRequest,
+    ExportAs,
+    Export,
+    ExporterPanel
 )
 
 
@@ -213,6 +360,16 @@ def register():
     bpy.types.Scene.APIData = bpy.props.PointerProperty(type=APIData)
     bpy.types.Scene.Request = bpy.props.PointerProperty(type=Request)
     bpy.types.Scene.Response = bpy.props.PointerProperty(type=Response)
+    bpy.types.Scene.file_format = bpy.props.EnumProperty(
+        name="File format",
+        description="Select file format",
+        items=[
+            ('OBJ', "OBJ", "OBJ file."),
+            ('FBX', "FBX", "FBX file"),
+            ('BLEND', "BLENDER", 'Blender file'),
+            ('GLTF', "GLTF", 'glTF file')
+        ]
+    )
 
 
 def unregister():
@@ -233,8 +390,3 @@ if __name__ == "__main__":
     bpy.context.scene.Request.method = "GET"
     bpy.context.scene.Request.headers = "{}"
 
-
-    try:
-        bpy.ops.object.do_request()
-    except RuntimeError:
-        print("Error")
