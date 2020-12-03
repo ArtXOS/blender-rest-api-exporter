@@ -131,17 +131,17 @@ class DoGetRequest(bpy.types.Operator):
             response = requests.get(endpoint, headers=headers, timeout=TIMEOUT)
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
-            print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            print("Http Error: ", httperr)
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
-            print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            print("Connection Error: ", conerr)
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
-            print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            print("Timeout Error: ", tmterr)
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
-            print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            print("Oops... Unknown Error ", error)
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -167,17 +167,17 @@ class DoPostRequest(bpy.types.Operator):
             response = requests.post(endpoint, headers=headers, timeout=TIMEOUT)
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
-            print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            print("Http Error: ", httperr)
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
-            print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            print("Connection Error: ", conerr)
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
-            print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            print("Timeout Error: ", tmterr)
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
-            print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            print("Oops... Unknown Error ", error)
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -203,17 +203,17 @@ class DoPutRequest(bpy.types.Operator):
             response = requests.put(endpoint, headers=headers, timeout=TIMEOUT)
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
-            print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            print("Http Error: ", httperr)
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
-            print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            print("Connection Error: ", conerr)
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
-            print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            print("Timeout Error: ", tmterr)
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
-            print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            print("Oops... Unknown Error ", error)
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -239,17 +239,17 @@ class DoDeleteRequest(bpy.types.Operator):
             response = requests.delete(endpoint, headers=headers, timeout=TIMEOUT)
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
-            print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            print("Http Error: ", httperr)
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
-            print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            print("Connection Error: ", conerr)
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
-            print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            print("Timeout Error: ", tmterr)
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
-            print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            print("Oops... Unknown Error ", error)
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -365,6 +365,107 @@ class Export(bpy.types.Operator):
 
         return {'FINISHED'}
 
+# --------------- VMCK features ---------------- #
+
+
+class GO(bpy.types.PropertyGroup):
+    id: bpy.props.StringProperty(
+        name="id",
+        description="GO id"
+    )
+    name: bpy.props.StringProperty(
+        name="Name",
+        description="GO name"
+    )
+    version: bpy.props.IntProperty(
+        name="Version",
+        description="GO version",
+        default=1
+    )
+    status: bpy.props.StringProperty(
+        name="status",
+        description="GO status"
+    )
+    format: bpy.props.EnumProperty(
+        name="GO format",
+        description="Select file format",
+        items=[
+            ('OBJ', "OBJ", "OBJ file."),
+            ('FBX', "FBX", "FBX file"),
+            ('BLEND', "BLENDER", 'Blender file'),
+            ('GLTF', "GLTF", 'glTF file')
+        ]
+    )
+    model_id: bpy.props.StringProperty(
+        name="model_id",
+        description="3D model id of GO"
+    )
+    model_versions: bpy.props.StringProperty(
+        name="model_versions",
+        description="Versions of 3D model of GO"
+    )
+
+
+class GOGroup(bpy.types.PropertyGroup):
+    coll: bpy.props.CollectionProperty(type=GO)
+    index: bpy.props.IntProperty()
+
+
+class FileList(bpy.types.UIList):
+    def draw_item(self,
+                  context,
+                  layout,
+                  data,
+                  item,
+                  icon,
+                  active_data,
+                  active_property,
+                  index=0,
+                  flt_flag=0):
+
+        file_box = layout.box()
+
+        file_box_split = file_box.split(factor=0.8)
+        file_info = file_box_split.column()
+        file_operators = file_box_split.column()
+
+        file_info_split_1 = file_info.split(factor=0.7, align=True)
+
+        file_info_split_1_col1 = file_info_split_1.column()
+        file_info_split_1_col1.label(item.name)
+        file_info_split_1_col2 = file_info_split_1.column()
+        file_info_split_1_col2.label(item.format)
+
+        file_info_split_2 = file_info.split(factor=0.5)
+
+        file_info_split_2_col1 = file_info_split_2.column()
+        file_info_split_2_col1.label("Version: " + str(item.version))
+        file_info_split_2_col2 = file_info_split_2.column()
+        file_info_split_2_col2.label("Status: " + str(item.status))
+
+        load = file_operators.operator("connector.download")
+        load.item.name = item.name
+        load.item.id = item.id
+        load.item.version = item.version
+        load.item.format = item.format
+        load.item.model_id = item.model_id
+        load.item.model_versions = item.model_vers
+
+        append = file_operators.operator("connector.append")
+        append.item.name = item.name
+        append.item.id = item.id
+        append.item.version = item.version
+        append.item.format = item.format
+        append.item.model_id = item.model_id
+        append.item.model_versions = item.model_vers
+
+
+class LoadFilesList(bpy.types.Operator):
+    bl_idname = "exporter_panel.load_files_list"
+    bl_label = "LoadFilesList"
+
+    def get_object_versions(self, item_id, context):
+
 
 class ExportAs(bpy.types.Operator):
     bl_idname = "object.export_as"
@@ -376,6 +477,10 @@ class ExportAs(bpy.types.Operator):
 
     def execute(self, context):
         return {'FINISHED'}
+
+
+
+# ---------------------------------------------- #
 
 
 class ExporterPanel(bpy.types.Panel):
