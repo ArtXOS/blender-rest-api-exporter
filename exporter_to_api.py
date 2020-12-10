@@ -8,10 +8,10 @@ import time
 import os
 
 bl_info = {
-    "name": "Export test",
+    "name": "Export to API",
     "description": "Export of 3D models to API",
     "author": "Illia Brylov",
-    "version": (0, 1, 0),
+    "version": (0, 0, 5),
     "blender": (2, 90, 1),
     "category": "Import-Export"
 }
@@ -116,13 +116,13 @@ class APIData(bpy.types.PropertyGroup):
 
 
 class DoGetRequest(bpy.types.Operator):
-    bl_idname = "object.do_get_request"
+    bl_idname = "system.do_get_request"
     bl_label = "API get request operator"
 
     def execute(self, context):
         print("Executing " + bpy.context.scene.Request.method + " request")
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
-        headers = json.loads(context.scene.Request.headers)
+        headers = json.loads(bpy.context.scene.Request.headers)
         scene_response = context.scene.Response
 
         scene_response.successful = False
@@ -132,16 +132,16 @@ class DoGetRequest(bpy.types.Operator):
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
             print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
             print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
             print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
             print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -152,13 +152,13 @@ class DoGetRequest(bpy.types.Operator):
 
 
 class DoPostRequest(bpy.types.Operator):
-    bl_idname = "object.do_post_request"
+    bl_idname = "system.do_post_request"
     bl_label = "API post request operator"
 
     def execute(self, context):
         print("Executing " + bpy.context.scene.Request.method + " request")
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
-        headers = json.loads(context.scene.Request.headers)
+        headers = json.loads(bpy.context.scene.Request.headers)
         scene_response = context.scene.Response
 
         scene_response.successful = False
@@ -168,16 +168,16 @@ class DoPostRequest(bpy.types.Operator):
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
             print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
             print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
             print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
             print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -188,13 +188,13 @@ class DoPostRequest(bpy.types.Operator):
 
 
 class DoPutRequest(bpy.types.Operator):
-    bl_idname = "object.do_put_request"
+    bl_idname = "system.do_put_request"
     bl_label = "API put request operator"
 
     def execute(self, context):
         print("Executing " + bpy.context.scene.Request.method + " request")
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
-        headers = json.loads(context.scene.Request.headers)
+        headers = json.loads(bpy.context.scene.Request.headers)
         scene_response = context.scene.Response
 
         scene_response.successful = False
@@ -204,16 +204,16 @@ class DoPutRequest(bpy.types.Operator):
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
             print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
             print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
             print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
             print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -224,13 +224,13 @@ class DoPutRequest(bpy.types.Operator):
 
 
 class DoDeleteRequest(bpy.types.Operator):
-    bl_idname = "object.do_delete_request"
+    bl_idname = "system.do_delete_request"
     bl_label = "API delete request operator"
 
     def execute(self, context):
         print("Executing " + bpy.context.scene.Request.method + " request")
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
-        headers = json.loads(context.scene.Request.headers)
+        headers = json.loads(bpy.context.scene.Request.headers)
         scene_response = context.scene.Response
 
         scene_response.successful = False
@@ -240,16 +240,16 @@ class DoDeleteRequest(bpy.types.Operator):
             scene_response.successful = True
         except requests.exceptions.HTTPError as httperr:
             print("Http Error:", httperr)
-            bpy.ops.log.add(log="Http Error:" + str(httperr))
+            bpy.ops.log.add(log="Http Error: " + str(httperr))
         except requests.exceptions.ConnectionError as conerr:
             print("Connection Error:", conerr)
-            bpy.ops.log.add(log="Connection Error" + str(conerr))
+            bpy.ops.log.add(log="Connection Error " + str(conerr))
         except requests.exceptions.Timeout as tmterr:
             print("Timeout Error:", tmterr)
-            bpy.ops.log.add(log="Timeout Error:" + str(tmterr))
+            bpy.ops.log.add(log="Timeout Error: " + str(tmterr))
         except requests.exceptions.RequestException as error:
             print("Oops... Unknown Error", error)
-            bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
+            bpy.ops.log.add(log="Oops... Unknown Error " + str(error))
 
         if not scene_response.successful:
             return {'FINISHED'}
@@ -266,26 +266,32 @@ class CheckConnection(bpy.types.Operator):
     def execute(self, context):
         request = context.scene.Request
         request.method = "GET"
-        request.headers = context.scene.APIData.user.authorization
 
-        bpy.ops.object.do_request()
+        bpy.ops.system.do_request()
 
         return {'FINISHED'}
 
 
 class DoRequest(bpy.types.Operator):
-    bl_idname = "object.do_request"
+    bl_idname = "system.do_request"
     bl_label = "API request operator"
 
-    @classmethod
-    def poll(cls, context):
-        method = bpy.context.scene.Request.method
-        return context.scene.APIData is not None and context.scene.APIData.host is not "" and method in {
-            'GET', 'POST', 'PUT', 'DELETE'}
-
     def execute(self, context):
+
         method = bpy.context.scene.Request.method
-        method_call = "bpy.ops.object.do_" + method.lower() + "_request()"
+        bpy.context.scene.Request.headers = json.dumps(
+            {'Authorization': "Bearer " + context.scene.APIData.user.authorization})
+
+        if method not in {'GET', 'POST', 'PUT', 'DELETE'}:
+            bpy.ops.log.add(log="Error: Request method is invalid: " + method)
+            return {'FINISHED'}
+
+        if not context.scene.APIData.host.startswith("https://") \
+                and not context.scene.APIData.host.startswith("http://"):
+            bpy.ops.log.add(log="Error: host has to start with https:// or http://")
+            return {'FINISHED'}
+
+        method_call = "bpy.ops.system.do_" + method.lower() + "_request()"
         eval(method_call)
         response = bpy.context.scene.Response
 
@@ -298,15 +304,8 @@ class DoRequest(bpy.types.Operator):
 
 
 class Export(bpy.types.Operator):
-    bl_idname = "object.export"
+    bl_idname = "system.export"
     bl_label = "Export"
-
-    @classmethod
-    def poll(cls, context):
-        if bpy.context.scene.FileName is "":
-            bpy.ops.log.add(log="Error: file name is empty")
-        return context.scene.APIData is not None and context.scene.APIData.host is not "" \
-               and context.scene.FileName is not ""
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=300)
@@ -316,9 +315,21 @@ class Export(bpy.types.Operator):
         layout.prop(context.scene, "file_format")
 
     def execute(self, context):
+
+        if bpy.context.scene.file_name is "":
+            bpy.ops.log.add(log="Error: file name is empty")
+            return {'FINISHED'}
+
+        bpy.ops.system.check_connection()
+
+        if not bpy.context.scene.Response.successful:
+            return {'FINISHED'}
+        else:
+            bpy.ops.log.clear()
+
         temp_dir = bpy.context.preferences.filepaths.temporary_directory
         file_format = context.scene.file_format
-        file_name = context.scene.FileName
+        file_name = context.scene.file_name
         filepath = temp_dir + file_name + "." + file_format.lower()
 
         if file_format == 'OBJ':
@@ -333,11 +344,14 @@ class Export(bpy.types.Operator):
         bpy.ops.log.add(log="Tmp file saved to: " + filepath)
 
         endpoint = context.scene.APIData.host + context.scene.Request.endpoint
-        headers = {"Authorization": "Bearer " + context.scene.APIData.user.authorization}
 
         bpy.ops.log.add(log="Exporting...")
         file_obj = open(filepath, 'rb')
-        files = {'model': (file_name, file_obj, 'multipart/form-data')}
+
+        files = {
+            'name': file_name,
+            'model': (file_name, file_obj, 'multipart/form-data')
+        }
 
         if file_format == 'OBJ':
             mtl_file_obj_filepath = temp_dir + file_name + ".mtl"
@@ -345,6 +359,10 @@ class Export(bpy.types.Operator):
             files.update({'material': (file_name + ".mtl", mtl_file_obj, 'multipart/form-data')})
 
         context.scene.Response.successful = False
+        response = None
+
+        headers = {'Authorization': "Bearer " + context.scene.APIData.user.authorization}
+
         try:
             response = requests.post(endpoint, headers=headers, files=files, timeout=TIMEOUT)
             context.scene.Response.successful = True
@@ -361,11 +379,9 @@ class Export(bpy.types.Operator):
             print("Oops... Unknown Error", error)
             bpy.ops.log.add(log="Oops... Unknown Error" + str(error))
 
-        if not context.scene.Response.successful:
-            return {'FINISHED'}
-
-        bpy.ops.log.add(log="[" + str(response.status_code) + "]")
-        bpy.ops.log.add(log=str(response.content))
+        if response:
+            bpy.ops.log.add(log="[" + str(response.status_code) + "]")
+            bpy.ops.log.add(log=str(response.content))
 
         file_obj.close()
         os.remove(filepath)
@@ -374,13 +390,13 @@ class Export(bpy.types.Operator):
             mtl_file_obj.close()
             os.remove(mtl_file_obj_filepath)
 
-        bpy.ops.log.add(log="Removed tmp files")
+        bpy.ops.log.add(log="Removed tmp files in " + temp_dir)
 
         return {'FINISHED'}
 
 
 class ExportAs(bpy.types.Operator):
-    bl_idname = "object.export_as"
+    bl_idname = "system.export_as"
     bl_label = "Export As"
 
     @classmethod
@@ -436,9 +452,9 @@ class ExporterPanel(bpy.types.Panel):
         main_layout.label(text="Export section:")
         export_box = main_layout.box()
         export_file_name_row = export_box.row()
-        export_file_name_row.prop(context.scene.FileName, "file_name")
+        export_file_name_row.prop(context.scene, "file_name")
         export_buttons_row = export_box.row()
-        export_buttons_row.operator("object.export")
+        export_buttons_row.operator("system.export")
 
         log_box = main_layout.box()
         log_box.label(text="Log section:")
@@ -489,9 +505,9 @@ def register():
         ]
     )
     bpy.types.Scene.LogGroup = bpy.props.PointerProperty(type=LogGroup)
-    bpy.types.Scene.FileName = bpy.props.StringProperty(
-        name="file_name",
-        description="File name",
+    bpy.types.Scene.file_name = bpy.props.StringProperty(
+        name="File name",
+        description="File name to export",
         default=""
     )
 
