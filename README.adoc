@@ -76,7 +76,7 @@ Log error, when trying to export the file with an empty filename
 
 image::./doc/empty_filename.png[700 ,700, align="center"]
 
-=== Advanced section:
+== Advanced section:
 
 Plugin source code contains some parts that it doesn't use currently, but which can be very usefull when adding different additional features to it. F.e. it's operators to send different HTTP request and Request-Response property groups. At this moment only **system.do_request** and **system.do_get_request** operators are used when calling **system.check_connection**. **system.do_request** is an entry part to call each HTTP request
 
@@ -85,7 +85,7 @@ Also the Import section is under development. This section can be used only with
 **system.export** operator fills the request body to the dictionary in the format VMCK API requires. You can change it directly to meet your own needs  
 
 
-==== Some interesting parts:
+== Some interesting parts:
 
 ### Export operator
 
