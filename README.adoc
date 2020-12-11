@@ -1,7 +1,7 @@
 = blender-rest-api-exporter
 
 Export to RESTfull API add-on for Blender. You can use this add-on to make faster the process of sending 3D models to your server, after they've been created or modified. You have a possibility to export the whole scene collection in different file formats. Currently they are .blend, .fbx, .obj, .gltf. Add-on creates tmp 3D model file in the format you've choosed, then sends it to the server. Also it sends the model textures to the server (.png and .jpg files from "textures" folder in the project root)After receiving a response, add log with a response status and shows the response content if possible. Also this add-on can be used with authorized requests. By default it uses Bearer token (you have to fill Authorization field without Bearer prefix) to send your request with authorization header added.
-This add-on has to be a part of VMCK project. **Expired by: xref:https://kralovskavennamesta.cz/vystupy2019/dokumentace_exportni_system_2019.pdf[]**
+This add-on has to be a part of VMCK project. **Inspired by: https://kralovskavennamesta.cz/vystupy2019/dokumentace_exportni_system_2019.pdf**
 
 IMPORTANT: Under development. Tested on WIN10, Blender 2.90.1
 
